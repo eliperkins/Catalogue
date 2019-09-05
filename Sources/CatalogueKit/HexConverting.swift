@@ -1,3 +1,5 @@
+import Foundation
+
 public struct HexConverting {
     enum DecodingError: Error {
         case incorrectLength
@@ -35,8 +37,11 @@ public struct HexConverting {
         let r = (intValue & 0xff000000) >> 24
         let g = (intValue & 0x00ff0000) >> 16
         let b = (intValue & 0x0000ff00) >> 8
-        let a = Float((intValue & 0x000000ff))/255
 
-        return Color.HexRepresentation(r: r, g: g, b: b, a: a)
+        var inputAlphaDecimal = Decimal(Double(intValue & 0x000000ff) / 255)
+        var roundedAlpha = Decimal(0)
+        NSDecimalRound(&roundedAlpha, &inputAlphaDecimal, 3, .plain)
+
+        return Color.HexRepresentation(r: r, g: g, b: b, a: Double(truncating: roundedAlpha as NSNumber))
     }
 }
