@@ -28,7 +28,8 @@ public struct Color: Codable {
                 green = try values.decode(Int.self, forKey: .green)
                 blue = try values.decode(Int.self, forKey: .blue)
                 alpha = try values.decode(Double.self, forKey: .alpha)
-            } else if let stringValue = try? decoder.singleValueContainer() as? String {
+            } else if let container = try? decoder.singleValueContainer() {
+                let stringValue = try container.decode(String.self)
                 self = try HexConverting.fromStringValue(stringValue)
             } else {
                 throw DecodingError.typeMismatch(
@@ -55,6 +56,13 @@ public struct Color: Codable {
         public let contrast: Contrast
         public let colorSpace = ColorSpace.srgb
         public let hex: HexRepresentation
+
+        enum CodingKeys: String, CodingKey {
+            case luminosity
+            case contrast
+            case colorSpace
+            case hex = "hexWithTrailingAlpha"
+        }
     }
 
     public let name: String

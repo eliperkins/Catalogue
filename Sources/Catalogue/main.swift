@@ -1,92 +1,25 @@
 import CatalogueKit
 import Foundation
 
-//guard CommandLine.arguments.count > 1 else {
-//    fatalError("Path to write required as a parameter")
-//}
-let path = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "Okay"
+guard CommandLine.arguments.count == 3 else {
+    fatalError("Usage: catalogue source.json OutputDir/")
+}
+let source = CommandLine.arguments[1]
+let outputPath = CommandLine.arguments[2]
 
 do {
-    let colorJson: [String: Any] = [
-        "name": "BackgroundPrimary",
-        "variants": [
-            [
-                "luminosity": "any",
-                "contrast": "normal",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ],
-            [
-                "luminosity": "light",
-                "contrast": "normal",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ],
-            [
-                "luminosity": "dark",
-                "contrast": "normal",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ],
-            [
-                "luminosity": "any",
-                "contrast": "high",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ],
-            [
-                "luminosity": "light",
-                "contrast": "high",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ],
-            [
-                "luminosity": "dark",
-                "contrast": "high",
-                "colorSpace": "srgb",
-                "hex": [
-                    "red": 255,
-                    "green": 120,
-                    "blue": 241,
-                    "alpha": 1.0
-                ]
-            ]
-        ]
-    ]
-
-    let data = try JSONSerialization.data(withJSONObject: colorJson, options: [])
-    let decoder = JSONDecoder()
-    let color = try decoder.decode(Color.self, from: data)
-
-    let creator = AssetCreator(assetFileName: "Primer")
-    try creator.write([color], at: path)
+    // TODO
+    if #available(OSX 10.11, *) {
+        let sourceDataPath = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(source)
+        let data = try Data(contentsOf: sourceDataPath)
+        let decoder = JSONDecoder()
+        let colors = try decoder.decode([Color].self, from: data)
+        let creator = AssetCreator(assetFileName: "Primer")
+        try creator.write(colors, at: outputPath)
+    }
 } catch {
     print(error.localizedDescription)
+    dump(error)
     exit(1)
 //    fatalError(error.localizedDescription)
 }
