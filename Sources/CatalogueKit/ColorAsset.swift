@@ -61,7 +61,22 @@ struct ColorAsset: Codable {
                 return nil
             }
         }
-        self.colors = variants.map { variant in
+
+        func normalize(_ variants: [Color.Variant]) -> [Color.Variant] {
+            // TODO: handle multiple contrasts
+            if variants.contains(where: { $0.luminosity == .any }) {
+                return variants
+            }
+
+            guard let lightVariant = variants.first(where: { $0.luminosity == .light }) else {
+                return variants
+            }
+
+            let anyVariant = Color.Variant(luminosity: .any, contrast: lightVariant.contrast, hex: lightVariant.hex)
+            return variants + [anyVariant]
+        }
+
+        self.colors = normalize(variants).map { variant in
             AssetColor(
                 appearances: appearances(from: variant),
                 color: ColorAsset.AssetColor.ColorValue(
