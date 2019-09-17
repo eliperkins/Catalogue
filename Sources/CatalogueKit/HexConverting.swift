@@ -2,7 +2,7 @@ import Foundation
 
 public struct HexConverting {
     enum DecodingError: Error {
-        case incorrectLength
+        case incorrectLength(input: String, stripped: String)
         case malformedHexValue(String)
     }
 
@@ -12,8 +12,9 @@ public struct HexConverting {
         case 3: return try fromThreeCharacterValue(stripped)
         case 4: return try fromFourCharacterValue(stripped)
         case 6: return try fromSixCharacterValue(stripped)
+        case 7: return try fromSevenCharacterValue(stripped)
         case 8: return try fromEightCharacterValue(stripped)
-        default: throw DecodingError.incorrectLength
+        default: throw DecodingError.incorrectLength(input: hex, stripped: stripped)
         }
     }
 
@@ -27,6 +28,12 @@ public struct HexConverting {
 
     static func fromSixCharacterValue(_ hex: String) throws -> Color.HexRepresentation {
         return try fromEightCharacterValue(hex + "ff")
+    }
+    
+    static func fromSevenCharacterValue(_ hex: String) throws -> Color.HexRepresentation {
+        let rgb = String(hex.prefix(6))
+        let alpha = String(hex.suffix(1))
+        return try fromEightCharacterValue(rgb + "0" + alpha)
     }
 
     static func fromEightCharacterValue(_ hex: String) throws -> Color.HexRepresentation {
