@@ -18,7 +18,20 @@ public struct AssetCreator {
     }()
 
     public func write(_ colors: [Color], at path: String) throws {
-        let assetFolder = try fileSystem.createFolderIfNeeded(at: path + "/\(assetFileName).xcassets")
+        // Ensure a full-rewrite of assets if one currently exists.
+        let folder = try Folder(path: path + "/\(assetFileName).xcassets", using: fileManager)
+        try folder.delete()
+
+        // Overwrite with a new blank directory.
+        let assetFolder = try fileSystem.createFolderIfNeeded(at: folder.path)
+        let rootContents = try JSONSerialization.data(withJSONObject: [
+            "info" : [
+              "version" : 1,
+              "author" : "xcode"
+            ]
+        ], options: [.prettyPrinted])
+        try assetFolder.createFile(named: "Contents.json", contents: rootContents)
+
         let colorsFolder = try assetFolder.createSubfolder(named: "Colors")
 
         try colors.forEach { color in
