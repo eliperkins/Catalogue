@@ -64,12 +64,12 @@ struct ColorAsset: Codable {
 
         func normalize(_ variants: [Color.Variant]) -> [Color.Variant] {
             // TODO: handle multiple contrasts
-            if variants.contains(where: { $0.luminosity == .any }) {
+            if variants.contains(where: { $0.luminosity == .any && $0.contrast == .normal }) {
                 return variants
             }
 
             guard let lightVariant = variants.first(where: { $0.luminosity == .light }) else {
-                return variants
+                return variants + [Color.Variant(luminosity: .any, contrast: .normal, hex: Color.HexRepresentation(r: 255, g: 255, b: 255, a: 1.0))]
             }
 
             let anyVariant = Color.Variant(luminosity: .any, contrast: lightVariant.contrast, hex: lightVariant.hex)
