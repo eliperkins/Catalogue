@@ -14,7 +14,7 @@ do {
         let data = try Data(contentsOf: sourceDataPath)
         let decoder = JSONDecoder()
         let colors = try decoder.decode([Color].self, from: data)
-        let creator = AssetCreator(assetFileName: "Primer")
+        let creator = AssetCreator(assetFileName: "Assets")
         try creator.write(colors, at: outputPath)
     }
 } catch {
